@@ -1,0 +1,101 @@
+<html>
+<head>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
+    <style type="text/css">
+        body
+        {
+            background-color: #808080;
+            font-family: Arial;
+        }
+
+        canvas
+        {
+            background-color: white;
+            display: block;
+            margin-top: 5px;
+            margin-bottom: 20px;
+        }
+
+        p
+        {
+            font-size: 11px;
+        }
+
+        h2
+        {
+            display: inline;
+        }
+
+    </style>
+</head>
+
+<body>
+<h2 id="regularHeading">Regular canvas</h2>
+<canvas id="regular" width="228" height="91"></canvas>
+
+<h2 id="retinaHeading">Retina Canvas</h2>
+<canvas id="retina" width="228" height="91"></canvas>
+</body>
+
+<script>
+    $(document).ready(function ()
+    {
+        console.log("window.devicePixelRatio = " + window.devicePixelRatio);
+
+        var img = new Image();
+        img.src = "car.png";
+
+        var imgRetina;
+
+        var retinaCanvas = $('#retina')[0];
+        var retinaContext = retinaCanvas.getContext('2d');
+
+        $(img).load(function ()
+        {
+            console.log("img loaded");
+
+            var regularContext = $('#regular')[0].getContext('2d');
+            regularContext.drawImage(img, 0, 0, img.width, img.height);
+
+            if (window.devicePixelRatio > 1)
+            {
+                imgRetina = new Image();
+                imgRetina.src = "car-retina.png";
+
+                $(imgRetina).load(function ()
+                {
+                    console.log("img retina loaded");
+
+                    var hdw = $(retinaCanvas).attr('width');
+                    var hdh = $(retinaCanvas).attr('height');
+
+                    $(retinaCanvas).attr('width', hdw * window.devicePixelRatio);
+                    $(retinaCanvas).attr('height', hdh * window.devicePixelRatio);
+
+                    $(retinaCanvas).css('width', hdw);
+                    $(retinaCanvas).css('height', hdh);
+
+                    //    retinaContext.scale(window.devicePixelRatio, window.devicePixelRatio);
+                    retinaContext.drawImage(imgRetina, 0, 0, imgRetina.width, imgRetina.height);
+                });
+            }
+            else
+            {
+                console.log("not retina display.. show normal image");
+
+                var p = document.createElement("p");
+                $(p).css("color", "#993300");
+                $(p).css("display", "inline");
+//                $(p).css("vertical-align", "top");
+                p.innerHTML = " not a retina display so showing normal image";
+
+                $("#retinaHeading").after(p);
+//                $("#retinaHeading").css("vertical-align", "top");
+
+                retinaContext.drawImage(img, 0, 0, img.width, img.height);
+            }
+        });
+    });
+</script>
+</html>
